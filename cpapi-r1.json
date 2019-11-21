@@ -1,0 +1,432 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Adobe Content Platform API",
+    "description": "This is the starting point for the content platform API.",
+    "contact": {
+      "name": "Adobe Customer Care",
+      "url": "http://support.adobe.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://platform-cs-stage-adobe.io/content",
+      "description": "stage server"
+    }
+  ],
+  "externalDocs": {
+    "description": "Find out more about the content platform API",
+    "url": "https://git.corp.adobe.com/pages/CAF/api-spec"
+  },
+  "paths": {
+    "/directory": {
+      "get": {
+        "summary": "http://ns.adobe.com/adobecloud/rel/directory",
+        "description": "This is the root repository and is the starting point for the API. Links returned from this API will link to available assets which can be read and updated. It will also give options for creating or updating new and existing assets.",
+        "tags": [
+          "Discover Root Repository"
+        ],
+        "operationId": "getRootDirectory",
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/vnd.adobecloud.collection+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/root"
+                }
+              }
+            },
+            "links": {
+              "shared-with-me": {
+                "$ref": "#/components/links/shared-with-me"
+              },
+              "primary": {
+                "$ref": "#/components/links/primary"
+              },
+              "assets": {
+                "$ref": "#/components/links/assets"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/directory/repo/{org-id}/assets/assetsDirectory": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "org-id",
+          "description": "The ID of the organization containing the assets.",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "text"
+          }
+        }
+      ],
+      "get": {
+        "summary": "http://ns.adobe.com/adobecloud/rel/assets",
+        "description": "Use this link to explore the assets contained in the organization repository.  \n\n **Warning: Do not rely on the paths in the specification. They may work but you should be using the links returned in the response from previous API calls.**",
+        "tags": [
+          "Explore Assets"
+        ],
+        "operationId": "getAssets",
+        "responses": {
+          "200": {
+            "description": "success",
+            "content": {
+              "application/vnd.adobecloud.collection+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/asset"
+                }
+              }
+            },
+            "links": {
+              "quota": {
+                "$ref": "#/components/links/quota"
+              },
+              "path": {
+                "$ref": "#/components/links/path"
+              },
+              "ac-policy": {
+                "$ref": "#/components/links/ac-policy"
+              },
+              "ac-effective": {
+                "$ref": "#/components/links/ac-effective"
+              },
+              "id": {
+                "$ref": "#/components/links/id"
+              },
+              "ac-check": {
+                "$ref": "#/components/links/ac-check"
+              },
+              "discard": {
+                "$ref": "#/components/links/discard"
+              },
+              "create": {
+                "$ref": "#/components/links/create"
+              },
+              "page": {
+                "$ref": "#/components/links/page"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/directory/rep/{org-id}/assetsDirectory": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "org-id",
+          "description": "The ID for the organization containing the assets.",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "text"
+          }
+        }
+      ],
+      "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "name",
+            "description": "The name of the directory to be created.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "text"
+            }
+          },
+          {
+            "in": "query",
+            "name": "data_center",
+            "description": "The name of the data center where the assets will be stored (e.g., VA7).",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "text"
+            }
+          }
+        ],
+        "summary": "http://ns.adobe.com/adobecloud/rel/create",
+        "description": "Create a new directory. \n\n **Warning: Do not rely on the paths in the specification. They may work but you should be using the links returned in the response from previous API calls.**",
+        "tags": [
+          "Create a New Directory"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "link": {
+                "description": "The link to the newly created directory. The link relation is http://ns.adobe.com/adobecloud/rel/id.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "root": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "link relation name": {
+                "type": "object",
+                "properties": {
+                  "href": {
+                    "type": "string"
+                  },
+                  "templated": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "children": {
+            "type": "object",
+            "required": [
+              "owner",
+              "name",
+              "region",
+              "path",
+              "format",
+              "referenceType",
+              "_links"
+            ],
+            "properties": {
+              "owner": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "type"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "name": {
+                "type": "string"
+              },
+              "region": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "format": {
+                "type": "string"
+              },
+              "referenceType": {
+                "type": "string"
+              },
+              "_links": {
+                "type": "object",
+                "properties": {
+                  "link relation name": {
+                    "description": "This is usually in the form http://ns.adobe.com/adobecloud",
+                    "type": "object",
+                    "properties": {
+                      "href": {
+                        "type": "string"
+                      },
+                      "templated": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "asset": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "It would be nice to know what this is and how it is different from repo:id below."
+          },
+          "repo:id": {
+            "type": "string"
+          },
+          "repo:name": {
+            "type": "string"
+          },
+          "repo:path": {
+            "type": "string"
+          },
+          "dc:format": {
+            "type": "string"
+          },
+          "repo:createdDate": {
+            "type": "string"
+          },
+          "repo:lastModifedDate": {
+            "type": "string"
+          },
+          "repo:createDate": {
+            "type": "string"
+          },
+          "repo:modifyDate": {
+            "type": "string"
+          },
+          "repo:state": {
+            "type": "string"
+          },
+          "_page": {
+            "type": "object",
+            "properties": {
+              "orderBy": {
+                "type": "string"
+              },
+              "start": {
+                "type": "string"
+              },
+              "count": {
+                "type": "string"
+              }
+            }
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "link relation name": {
+                "description": "This is usually in the form http://ns.adobe.com/adobecloud",
+                "type": "object",
+                "properties": {
+                  "href": {
+                    "type": "string"
+                  },
+                  "templated": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "children": {
+            "type": "object",
+            "properties": {
+              "_links": {
+                "type": "object",
+                "properties": {
+                  "link relation name": {
+                    "description": "This is usually in the form http://ns.adobe.com/adobecloud",
+                    "type": "object",
+                    "properties": {
+                      "href": {
+                        "type": "string"
+                      },
+                      "templated": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "id": {
+                "type": "string"
+              },
+              "repo:id": {
+                "type": "string"
+              },
+              "repo:name": {
+                "type": "string"
+              },
+              "repo:path": {
+                "type": "string"
+              },
+              "dc:format": {
+                "type": "string"
+              },
+              "repo:createdDate": {
+                "type": "string"
+              },
+              "repo:lastModifedDate": {
+                "type": "string"
+              },
+              "repo:createDate": {
+                "type": "string"
+              },
+              "repo:modifyDate": {
+                "type": "string"
+              },
+              "repo:state": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "links": {
+      "shared-with-me": {
+        "description": "Retrieve a list of assets that are shared with the authenicated user."
+      },
+      "quota": {
+        "description": "Usage quota?"
+      },
+      "path": {
+        "description": "The path for a specific asset."
+      },
+      "ac-policy": {
+        "description": "Access control policy."
+      },
+      "ac-effective": {
+        "description": "Effective access control."
+      },
+      "id": {
+        "description": "Retrieve the ID for the asset."
+      },
+      "ac-check": {
+        "description": "Access control check."
+      },
+      "discard": {
+        "description": "Remove the asset from the repository."
+      },
+      "page": {
+        "description": "Select specific pages from a response."
+      },
+      "create": {
+        "description": "Create a new asset or directory."
+      },
+      "primary": {
+        "description": "Link for the primary asset."
+      },
+      "assets": {
+        "description": "List of assets in a repository."
+      },
+      "rendition": {
+        "description": "Retrieve a rendition of an asset."
+      },
+      "acl": {
+        "description": "See who has access to an asset."
+      }
+    }
+  }
+}
